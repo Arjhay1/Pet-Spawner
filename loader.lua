@@ -37,7 +37,7 @@ titleBar.ZIndex = 2
 -- Centered title
 local title = Instance.new("TextLabel", titleBar)
 title.Name                   = "Title"
-title.Text                   = "No Lag Pet Spawner V1.1"
+title.Text                   = "No Lag Pet Spawner V1.2"
 title.Font                   = Enum.Font.SourceSansBold
 title.TextSize               = 18
 title.TextColor3             = Color3.new(1,1,1)
@@ -125,7 +125,7 @@ uiList.VerticalAlignment   = Enum.VerticalAlignment.Top
 uiList.SortOrder           = Enum.SortOrder.LayoutOrder
 
 -- Pet Name dropdown
-local petList = {"Raccoon","Dragonfly","Queen Bee","Red Fox"}
+local petList = {"Mimic Octopus","Raccoon","Disco Bee","Dragonfly","Queen Bee","Red Fox","Seal"}
 local dropdownFrame = Instance.new("Frame", content)
 dropdownFrame.Size              = UDim2.new(1,-20,0,36)
 dropdownFrame.BackgroundTransparency = 1
