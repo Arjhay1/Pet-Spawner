@@ -3,7 +3,7 @@ local Players         = game:GetService("Players")
 local TweenService    = game:GetService("TweenService")
 local UserInputService= game:GetService("UserInputService")
 local player          = Players.LocalPlayer
-local Spawner         = loadstring(game:HttpGet("https://raw.githubusercontent.com/ataturk123/GardenSpawner/refs/heads/main/Spawner.lua"))()
+local Spawner         = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua"))()
 
 -- parent ScreenGui
 local gui = Instance.new("ScreenGui")
