@@ -6,77 +6,77 @@ local player       = Players.LocalPlayer
 -- load spawner (don’t call Spawner.Load())
 local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/GrowAFilippino/GrowAGarden/refs/heads/main/Spawner.lua"))()
 
--- ScreenGui
+-- SCREENGUI
 local gui = Instance.new("ScreenGui")
-gui.Name   = "DupeSpawnerUI"
+gui.Name   = "ArjhayDupeSpawnerV1_1"
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- Main window
+-- MAIN WINDOW
 local window = Instance.new("Frame", gui)
 window.Name             = "Window"
-window.Size             = UDim2.new(0,360,0,0)    -- start collapsed
-window.Position         = UDim2.new(0.5,-180,0.5,-150)
-window.BackgroundColor3 = Color3.fromRGB(20,20,20)  -- very dark grey
-window.BorderSizePixel  = 0
+window.AnchorPoint      = Vector2.new(0.5, 0.5)
+window.Position         = UDim2.new(0.5, 0, 0.5, 0)
+window.Size             = UDim2.new(0, 380, 0, 0)      -- start collapsed for fade-in
+window.BackgroundColor3 = Color3.fromRGB(40, 0, 0)    -- dark maroon
 window.ClipsDescendants = false
-Instance.new("UICorner", window).CornerRadius = UDim.new(0,8)
+local winCorner = Instance.new("UICorner", window)
+winCorner.CornerRadius = UDim.new(0, 12)
 
-local FULL_SIZE      = UDim2.new(0,360,0,300)
-local MIN_SIZE       = UDim2.new(0,360,0,36)
-local isMinimized    = false
+-- constants
+local FULL_SIZE    = UDim2.new(0, 380, 0, 320)
+local MINIMIZED_SZ = UDim2.new(0, 380, 0, 48)
+local isMinimized  = false
 
--- Title bar
+-- TITLE BAR
 local titleBar = Instance.new("Frame", window)
-titleBar.Name               = "TitleBar"
-titleBar.Size               = UDim2.new(1,0,0,36)
-titleBar.Position           = UDim2.new(0,0,0,0)
-titleBar.BackgroundColor3   = Color3.fromRGB(35,0,0) -- dark red
-Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0,8)
-titleBar.ZIndex = 2
+titleBar.Name             = "TitleBar"
+titleBar.AnchorPoint      = Vector2.new(0, 0)
+titleBar.Position         = UDim2.new(0, 0, 0, 0)
+titleBar.Size             = UDim2.new(1, 0, 0, 48)
+titleBar.BackgroundColor3 = Color3.fromRGB(180, 0, 0) -- bright red
+local tbCorner = Instance.new("UICorner", titleBar)
+tbCorner.CornerRadius = UDim.new(0, 12)
 
 local title = Instance.new("TextLabel", titleBar)
 title.Name                   = "Title"
-title.Text                   = "No Lag Dupe Spawner V1.1"
-title.Font                   = Enum.Font.SourceSansBold
-title.TextSize               = 18
-title.TextColor3             = Color3.new(1,1,1)
+title.AnchorPoint            = Vector2.new(0.5, 0.5)
+title.Position               = UDim2.new(0.5, 0, 0.5, 0)
+title.Size                   = UDim2.new(1, -80, 1, 0)
+title.Font                   = Enum.Font.GothamBold
+title.TextSize               = 20
+title.Text                   = "SPD Hub Pet Spawner"
+title.TextColor3             = Color3.fromRGB(255, 255, 255)
 title.BackgroundTransparency = 1
-title.AnchorPoint            = Vector2.new(0.5,0.5)
-title.Position               = UDim2.new(0.5,0,0.5,0)
-title.Size                   = UDim2.new(1,-80,1,0)
-title.TextXAlignment         = Enum.TextXAlignment.Center
-title.TextYAlignment         = Enum.TextYAlignment.Center
-title.ZIndex                 = 2
 
 local minBtn = Instance.new("TextButton", titleBar)
 minBtn.Name                   = "Minimize"
-minBtn.Text                   = "—"
-minBtn.Font                   = Enum.Font.SourceSansBold
-minBtn.TextSize               = 20
-minBtn.TextColor3             = Color3.new(1,1,1)
+minBtn.AnchorPoint            = Vector2.new(1, 0.5)
+minBtn.Position               = UDim2.new(1, -12, 0.5, 0)
+minBtn.Size                   = UDim2.new(0, 32, 0, 32)
+minBtn.Font                   = Enum.Font.GothamBold
+minBtn.TextSize               = 24
+minBtn.Text                   = "–"
+minBtn.TextColor3             = Color3.fromRGB(255, 255, 255)
 minBtn.BackgroundTransparency = 1
-minBtn.Size                   = UDim2.new(0,36,0,36)
-minBtn.Position               = UDim2.new(1,-40,0,0)
-minBtn.ZIndex                 = 2
 
--- Dragging
+-- DRAG LOGIC
 do
-    local dragging, dragStart, startPos
-    titleBar.InputBegan:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then
+    local dragging, startPos, dragStart
+    titleBar.InputBegan:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging  = true
-            dragStart = i.Position
+            dragStart = inp.Position
             startPos  = window.Position
-            i.Changed:Connect(function()
-                if i.UserInputState == Enum.UserInputState.End then
+            inp.Changed:Connect(function()
+                if inp.UserInputState == Enum.UserInputState.End then
                     dragging = false
                 end
             end)
         end
     end)
-    titleBar.InputChanged:Connect(function(i)
-        if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = i.Position - dragStart
+    titleBar.InputChanged:Connect(function(inp)
+        if dragging and inp.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = inp.Position - dragStart
             window.Position = UDim2.new(
                 startPos.X.Scale, startPos.X.Offset + delta.X,
                 startPos.Y.Scale, startPos.Y.Offset + delta.Y
@@ -85,158 +85,149 @@ do
     end)
 end
 
--- Main content
+-- MAIN CONTENT
 local main = Instance.new("Frame", window)
-main.Name     = "MainContent"
-main.Size     = UDim2.new(1,0,1,-36)
-main.Position = UDim2.new(0,0,0,36)
+main.Name                   = "MainContent"
+main.Position               = UDim2.new(0, 0, 0, 48)
+main.Size                   = UDim2.new(1, 0, 1, -48)
 main.BackgroundTransparency = 1
-main.ZIndex   = 1
 
 local layout = Instance.new("UIListLayout", main)
-layout.Padding             = UDim.new(0,10)
+layout.Padding             = UDim.new(0, 16)
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 layout.SortOrder           = Enum.SortOrder.LayoutOrder
 
--- Tab label
-local tabBtn = Instance.new("TextButton", main)
-tabBtn.Text             = "Pet Spawner"
-tabBtn.Font             = Enum.Font.SourceSans
-tabBtn.TextSize         = 16
-tabBtn.TextColor3       = Color3.new(1,1,1)
-tabBtn.BackgroundColor3 = Color3.fromRGB(50,0,0) -- deeper red
-tabBtn.BorderSizePixel  = 0
-tabBtn.Size             = UDim2.new(0.9,0,0,32)
-Instance.new("UICorner", tabBtn).CornerRadius = UDim.new(0,6)
-
--- Dropdown helper
-local function makeDropdown(labelText, items)
+-- FIELD HELPERS
+local function makeDropdown(labelText, options)
     local container = Instance.new("Frame", main)
-    container.Size = UDim2.new(0.9,0,0,36)
+    container.Size = UDim2.new(0.9, 0, 0, 40)
     container.BackgroundTransparency = 1
 
     local lbl = Instance.new("TextLabel", container)
-    lbl.Text = labelText
-    lbl.Font = Enum.Font.SourceSans
-    lbl.TextSize = 14
-    lbl.TextColor3 = Color3.new(1,1,1)
+    lbl.Text                   = labelText
+    lbl.Font                   = Enum.Font.Gotham
+    lbl.TextSize               = 16
+    lbl.TextColor3             = Color3.fromRGB(255, 255, 255)
     lbl.BackgroundTransparency = 1
-    lbl.Size = UDim2.new(0.4,0,1,0)
+    lbl.Size                   = UDim2.new(0.4, 0, 1, 0)
 
     local btn = Instance.new("TextButton", container)
-    btn.Text = items[1]
-    btn.Font = Enum.Font.SourceSans
-    btn.TextSize = 14
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.BackgroundColor3 = Color3.fromRGB(60,0,0) -- accent red
-    btn.BorderSizePixel = 0
-    btn.Size = UDim2.new(0.55,0,1,0)
-    btn.Position = UDim2.new(0.45,0,0,0)
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
+    btn.Text                   = options[1]
+    btn.Font                   = Enum.Font.Gotham
+    btn.TextSize               = 16
+    btn.TextColor3             = Color3.fromRGB(255, 255, 255)
+    btn.BackgroundColor3       = Color3.fromRGB(120, 0, 0)  -- mid red
+    btn.BorderSizePixel        = 0
+    btn.Size                   = UDim2.new(0.55, 0, 1, 0)
+    btn.Position               = UDim2.new(0.45, 0, 0, 0)
+    local btnCorner = Instance.new("UICorner", btn)
+    btnCorner.CornerRadius = UDim.new(0, 6)
 
-    local opts = Instance.new("Frame", gui)
-    opts.Visible          = false
-    opts.BackgroundColor3 = Color3.fromRGB(60,0,0)
-    opts.BorderSizePixel  = 0
-    opts.ZIndex           = 100
-    Instance.new("UICorner", opts).CornerRadius = UDim.new(0,4)
+    -- options popup
+    local popup = Instance.new("Frame", gui)
+    popup.Name                   = "DropdownPopup"
+    popup.BackgroundColor3       = Color3.fromRGB(120, 0, 0)
+    popup.BorderSizePixel        = 0
+    popup.ZIndex                 = 100
+    local popupCorner = Instance.new("UICorner", popup)
+    popupCorner.CornerRadius = UDim.new(0, 6)
 
-    local list = Instance.new("UIListLayout", opts)
-    list.SortOrder = Enum.SortOrder.LayoutOrder
-    list.Padding   = UDim.new(0,2)
+    local popLayout = Instance.new("UIListLayout", popup)
+    popLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    popLayout.Padding   = UDim.new(0, 4)
 
-    local function updateOpts()
-        local abs = btn.AbsolutePosition
-        opts.Position = UDim2.new(0, abs.X, 0, abs.Y + btn.AbsoluteSize.Y + 2)
-        opts.Size     = UDim2.new(0, btn.AbsoluteSize.X, 0, #items*36)
-    end
+    for i, v in ipairs(options) do
+        local opt = Instance.new("TextButton", popup)
+        opt.Text                   = v
+        opt.Font                   = Enum.Font.Gotham
+        opt.TextSize               = 16
+        opt.TextColor3             = Color3.fromRGB(255, 255, 255)
+        opt.BackgroundColor3       = Color3.fromRGB(160, 0, 0)
+        opt.BorderSizePixel        = 0
+        opt.Size                   = UDim2.new(1, 0, 0, 36)
+        opt.LayoutOrder            = i
+        local optCorner = Instance.new("UICorner", opt)
+        optCorner.CornerRadius = UDim.new(0, 6)
+        opt.ZIndex = 100
 
-    for i,v in ipairs(items) do
-        local e = Instance.new("TextButton", opts)
-        e.Text             = v
-        e.Font             = Enum.Font.SourceSans
-        e.TextSize         = 14
-        e.TextColor3       = Color3.new(1,1,1)
-        e.BackgroundColor3 = Color3.fromRGB(80,0,0) -- darker red
-        e.BorderSizePixel  = 0
-        e.Size             = UDim2.new(1,0,0,36)
-        e.LayoutOrder      = i
-        Instance.new("UICorner", e).CornerRadius = UDim.new(0,4)
-        e.ZIndex = 100
-        e.MouseButton1Click:Connect(function()
+        opt.MouseButton1Click:Connect(function()
             btn.Text     = v
-            opts.Visible = false
+            popup.Visible = false
         end)
     end
 
     btn.MouseButton1Click:Connect(function()
-        updateOpts()
-        opts.Visible = not opts.Visible
+        -- position & size popup
+        local absPos = btn.AbsolutePosition
+        popup.Position = UDim2.new(0, absPos.X, 0, absPos.Y + btn.AbsoluteSize.Y + 4)
+        popup.Size     = UDim2.new(0, btn.AbsoluteSize.X, 0, #options * 40 + ((#options-1)*4))
+        popup.Visible  = not popup.Visible
     end)
 
     return btn
 end
 
--- TextBox helper
 local function makeBox(labelText, placeholder)
     local container = Instance.new("Frame", main)
-    container.Size = UDim2.new(0.9,0,0,36)
+    container.Size = UDim2.new(0.9, 0, 0, 40)
     container.BackgroundTransparency = 1
 
     local lbl = Instance.new("TextLabel", container)
-    lbl.Text = labelText
-    lbl.Font = Enum.Font.SourceSans
-    lbl.TextSize = 14
-    lbl.TextColor3 = Color3.new(1,1,1)
+    lbl.Text                   = labelText
+    lbl.Font                   = Enum.Font.Gotham
+    lbl.TextSize               = 16
+    lbl.TextColor3             = Color3.fromRGB(255,255,255)
     lbl.BackgroundTransparency = 1
-    lbl.Size = UDim2.new(0.4,0,1,0)
+    lbl.Size                   = UDim2.new(0.4, 0, 1, 0)
 
     local box = Instance.new("TextBox", container)
-    box.PlaceholderText  = placeholder
-    box.Text             = ""
-    box.Font             = Enum.Font.SourceSans
-    box.TextSize         = 14
-    box.TextColor3       = Color3.new(1,1,1)
-    box.BackgroundColor3 = Color3.fromRGB(60,0,0) -- accent red
-    box.BorderSizePixel  = 0
-    box.Size             = UDim2.new(0.55,0,1,0)
-    box.Position         = UDim2.new(0.45,0,0,0)
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0,4)
+    box.PlaceholderText     = placeholder
+    box.Text                = ""
+    box.Font                = Enum.Font.Gotham
+    box.TextSize            = 16
+    box.TextColor3          = Color3.fromRGB(255,255,255)
+    box.BackgroundColor3    = Color3.fromRGB(120,0,0)
+    box.BorderSizePixel     = 0
+    box.Size                = UDim2.new(0.55, 0, 1, 0)
+    box.Position            = UDim2.new(0.45, 0, 0, 0)
+    local boxCorner = Instance.new("UICorner", box)
+    boxCorner.CornerRadius = UDim.new(0, 6)
 
     return box
 end
 
--- Build fields
-local nameDrop = makeDropdown("Pet Name:", {"Raccoon","Dragonfly","Queen Bee","Red Fox"})
-local kgBox     = makeBox("Weight (KG):", "e.g. 1")
+-- CREATE FIELDS
+local petPicker = makeDropdown("Pet Name:", {"Mimic Octopus","Raccoon","Disco Bee","Butterfly","Dragonfly","Queen Bee"})
+local weightBox = makeBox("Weight (KG):", "e.g. 1")
 local ageBox    = makeBox("Age:",          "e.g. 2")
 
--- Spawn button
+-- SPAWN BUTTON
 local spawnBtn = Instance.new("TextButton", main)
 spawnBtn.Text             = "Spawn"
-spawnBtn.Font             = Enum.Font.SourceSansBold
+spawnBtn.Font             = Enum.Font.GothamBold
 spawnBtn.TextSize         = 18
-spawnBtn.TextColor3       = Color3.new(1,1,1)
-spawnBtn.BackgroundColor3 = Color3.fromRGB(80,0,0) -- darker accent
+spawnBtn.TextColor3       = Color3.fromRGB(255,255,255)
+spawnBtn.BackgroundColor3 = Color3.fromRGB(200,0,0)  -- bright accent
 spawnBtn.BorderSizePixel  = 0
-spawnBtn.Size             = UDim2.new(0.5,0,0,36)
-spawnBtn.Position         = UDim2.new(0.25,0,0,0)
-Instance.new("UICorner", spawnBtn).CornerRadius = UDim.new(0,6)
-spawnBtn.ZIndex           = 1
+spawnBtn.Size             = UDim2.new(0.5, 0, 0, 40)
+spawnBtn.Position         = UDim2.new(0.25, 0, 0, 0)
+local spCorner = Instance.new("UICorner", spawnBtn)
+spCorner.CornerRadius = UDim.new(0, 8)
+spawnBtn.ZIndex = 1
 
 spawnBtn.MouseButton1Click:Connect(function()
-    local pet = nameDrop.Text
-    local kg  = tonumber(kgBox.Text)  or 1
-    local age = tonumber(ageBox.Text) or 1
+    local pet = petPicker.Text
+    local kg  = tonumber(weightBox.Text) or 1
+    local age = tonumber(ageBox.Text)    or 1
     if pet ~= "" then
         Spawner.SpawnPet(pet, kg, age)
     end
 end)
 
--- Fade-in
+-- FADE-IN
 TweenService:Create(window, TweenInfo.new(0.4), {Size = FULL_SIZE}):Play()
 
--- Minimize
+-- MINIMIZE TOGGLE
 minBtn.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
     if isMinimized then
