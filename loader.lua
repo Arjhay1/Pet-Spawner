@@ -36,7 +36,7 @@ titleBar.ZIndex = 2
 
 local title = Instance.new("TextLabel", titleBar)
 title.Name                   = "Title"
-title.Text                   = "No Lag V2 Pet Spawner"
+title.Text                   = "No Lag Pet Spawner V1.3"
 title.Font                   = Enum.Font.SourceSansBold
 title.TextSize               = 18
 title.TextColor3             = Color3.new(1,1,1)
