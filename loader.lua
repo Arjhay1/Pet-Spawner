@@ -36,7 +36,7 @@ titleBar.ZIndex = 2
 
 local title = Instance.new("TextLabel", titleBar)
 title.Name                   = "Title"
-title.Text                   = "No Lag Pet Spawner V1.3"
+title.Text                   = "No Lag V2 Pet Spawner"
 title.Font                   = Enum.Font.SourceSansBold
 title.TextSize               = 18
 title.TextColor3             = Color3.new(1,1,1)
@@ -208,7 +208,7 @@ local function makeBox(labelText, placeholder)
 end
 
 -- Build fields
-local nameDrop = makeDropdown("Pet Name:", {"Mimic Octopus","Raccoon","Disco Bee","Butterfly","Dragonfly","Queen Bee"})
+local nameDrop = makeDropdown("Pet Name:", {"Fennec Fox","Mimic Octopus","Raccoon","Disco Bee","Butterfly","Dragonfly","Queen Bee"})
 local kgBox     = makeBox("Weight (KG):", "e.g. 1")
 local ageBox    = makeBox("Age:",          "e.g. 2")
 
