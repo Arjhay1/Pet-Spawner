@@ -4,7 +4,7 @@ local TweenService = game:GetService("TweenService")
 local player       = Players.LocalPlayer
 
 -- load spawner (don’t call Spawner.Load())
-local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/GrowAFilippino/GrowAGarden/refs/heads/main/Spawner.lua"))()
+local Spawner = loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
 
 -- ScreenGui
 local gui = Instance.new("ScreenGui")
