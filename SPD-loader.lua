@@ -207,7 +207,7 @@ local function makeBox(labelText, placeholder)
 end
 
 -- Build fields
-local nameDrop = makeDropdown("Pet Name:", {"Mimic Octopus","Raccoon","Disco Bee","Butterfly","Dragonfly","Queen Bee"})
+local nameDrop = makeDropdown("Pet Name:", {"T-Rex","Mimic Octopus","Raccoon","Disco Bee","Butterfly","Dragonfly","Queen Bee"})
 local kgBox     = makeBox("Weight (KG):", "e.g. 1")
 local ageBox    = makeBox("Age:",          "e.g. 2")
 
