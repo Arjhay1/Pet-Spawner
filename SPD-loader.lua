@@ -4,7 +4,7 @@ local TweenService = game:GetService("TweenService")
 local player       = Players.LocalPlayer
 
 -- load spawner (don’t call Spawner.Load())
-local Spawner = loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
+local Spawner = loadstring(game:HttpGet("https://gitlab.com/darkiedarkie/dark/-/raw/main/Spawner.lua"))()
 
 -- ScreenGui
 local gui = Instance.new("ScreenGui")
@@ -36,7 +36,7 @@ titleBar.ZIndex = 2
 
 local title = Instance.new("TextLabel", titleBar)
 title.Name                   = "Title"
-title.Text                   = "SPD HUB Pet Spawner"
+title.Text                   = "SPD HUB Pet Spawner V5.5.1"
 title.Font                   = Enum.Font.SourceSansBold
 title.TextSize               = 18
 title.TextColor3             = Color3.new(1,1,1)
@@ -207,7 +207,7 @@ local function makeBox(labelText, placeholder)
 end
 
 -- Build fields
-local nameDrop = makeDropdown("Pet Name:", {"T-Rex","Mimic Octopus","Raccoon","Disco Bee","Butterfly","Dragonfly","Queen Bee"})
+local nameDrop = makeDropdown("Pet Name:", {"Lobster Thermidor","French Fry Ferret","Kitsune","Corrupted Kitsune","T-Rex","Mimic Octopus","Raccoon","Disco Bee","Butterfly","Dragonfly","Queen Bee"})
 local kgBox     = makeBox("Weight (KG):", "e.g. 1")
 local ageBox    = makeBox("Age:",          "e.g. 2")
 
